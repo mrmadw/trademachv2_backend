@@ -67,12 +67,12 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            docker pull mrmadw/mrmadw-repo:latest
+            docker pull mrmadw/mrmadw-repo:sha-99f50a0
             docker stop flask-backend || true
             docker rm flask-backend || true
             docker run -d \
               --name flask-backend \
               --restart unless-stopped \
               -p 5000:5000 \
-              --env-file ~/trademacv2/tm_backend/.env \
+              --env-file ~/trademachv2/tm_backend/.env \
               mrmadw/mrmadw-repo:latest
