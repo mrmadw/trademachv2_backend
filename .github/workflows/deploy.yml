@@ -10,8 +10,9 @@
 name: Publish Trademach Docker image
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main 
 
 jobs:
   push_to_registry:
