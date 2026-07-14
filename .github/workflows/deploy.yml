@@ -67,7 +67,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            docker pull mrmadw/mrmadw-repo:sha-99f50a0
+            docker pull mrmadw/mrmadw-repo:latest
             docker stop flask-backend || true
             docker rm flask-backend || true
             docker run -d \
