@@ -1,12 +1,10 @@
-FROM python:3.12-slim
+FROM alpine
+
+RUN apk add --no-cache bash
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
 
-COPY . .
-
-EXPOSE 5000
-
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "index:app"]
+ENTRYPOINT ["/app/entrypoint.sh"]
