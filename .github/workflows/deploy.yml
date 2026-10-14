@@ -68,11 +68,20 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             docker pull mrmadw/mrmadw-repo:latest
-            docker stop flask-backend || true
-            docker rm flask-backend || true
-            docker run -d \
-              --name flask-backend \
-              --restart unless-stopped \
-              -p 5000:5000 \
+            
+            #run DB migrations with the new image before switching over
+            docker run --rm \
+              --network appnet \
               --env-file ~/trademachv2/tm_backend/.env \
-              mrmadw/mrmadw-repo:latest
+              mrmadw/mrmadw-repo:latest \
+              flask db upgrade
+
+              docker stop flask-backend || true
+              docker run flask-backend || true
+              docker run -d \
+                --name flask-backend \
+                --restart unless-stopped \
+                --network appnet \
+                -p 5000:5000
+                --env-file ~/trademachv2/tm_backend/.env \
+                mrmadw/mrmadw-repo:latest
