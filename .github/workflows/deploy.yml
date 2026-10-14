@@ -77,7 +77,7 @@ jobs:
               flask db upgrade
 
               docker stop flask-backend || true
-              docker run flask-backend || true
+              docker rm flask-backend || true
               docker run -d \
                 --name flask-backend \
                 --restart unless-stopped \
