@@ -1,36 +1,65 @@
-from flask import Blueprint, jsonify
-from models import Listing
-from services.s3 import image_url
+from flask import Blueprint, jsonify, request
+from db import db
+from models.listing import Listing
+from auth_utils import admin_required
 
 listings_bp = Blueprint("listings", __name__)
 
 
-@listings_bp.get("/api/listings")
+@listings_bp.route("/listings", methods=["GET"])
 def get_listings():
-    listings = Listing.query.all()
+    listings = db.session.execute(
+        db.select(Listing)
+    ).scalars().all()
 
-    result = []
+    return jsonify([
+        {
+            "id": l.id,
+            "city": l.city,
+            "province": l.province,
+            "address": l.address
+        }
+        for l in listings
+    ])
 
-    for listing in listings:
-        product = listing.product
-        result.append({
-            "id": listing.id,
-            "product_id": listing.product_id,
-            "product_name": product.name,
-            "manufacturer": product.manufacturer,
-            "model": product.model,
-            "image_url": image_url(product.image_key),
-            "country": listing.country,
-            "province": listing.province,
-            "state": listing.state,
-            "city": listing.city,
-            "address": listing.address,
-            "po_box": listing.po_box,
-            "price": listing.price,
-            "src_qty": listing.src_qty,
-            "src_type": listing.src_type,
-            "pro_age": listing.pro_age,
-            "created_at": listing.created_at.isoformat() if listing.created_at else None,
-        })
 
-    return jsonify(result)
+@listings_bp.route("/listings", methods=["POST"])
+@admin_required
+def create_listing():
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify({"error": "A JSON object is required"}), 400
+
+    name = data.get("name")
+
+    if not isinstance(address, str) or not address.strip():
+        return jsonify({"error": "listing address is required"}), 400
+
+    listing = Listing(
+        name=name.strip(),
+        manufacturer=data.get("manufacturer"),
+        model=data.get("model")
+    )
+
+    db.session.add(product)
+    db.session.commit()
+
+    return jsonify({
+        "id": listing.id,
+        "city": listing.city,
+        "province": listing.province,
+        "address": listing.address
+    }), 201
+
+
+@listings_bp.route('/listings/<int:listing_id>', methods=['DELETE'])
+@admin_required
+def delete_listing(listing_id):
+    listing = db.session.get(Listing, listing_id)
+    if listing is None:
+        return jsonify({"error": "Listing not found"}), 404
+
+    db.session.delete(product)
+    db.session.commit()
+    return jsonify({"message": "Listing deleted"}), 200

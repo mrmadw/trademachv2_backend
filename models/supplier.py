@@ -1,4 +1,4 @@
-# models/supplier.py
+
 from db import db
 from datetime import datetime
 

@@ -1,89 +1,67 @@
-from flask import Blueprint, jsonify
-from models.product import Product
-from services.s3 import image_url, s3, BUCKET
-import uuid
+from flask import Blueprint, jsonify, request
 from db import db
+from models.product import Product
+from auth_utils import admin_required
 
 products_bp = Blueprint("products", __name__)
 
 
-@products_bp.get("/api/products")
+@products_bp.route("/products", methods=["GET"])
+@admin_required
 def get_products():
-    products = Product.query.all()
+    products = db.session.execute(
+        db.select(Product)
+    ).scalars().all()
 
-    result = []
-
-    for product in products:
-        prices = [l.price for l in product.listings]
-        result.append({
-        "id": product.id,
-        "name": product.name,
-        "manufacturer": product.manufacturer,
-        "model": product.model,
-        "image_url": image_url(product.image_key),
-        "price": min(prices) if prices else None,
-        })
-
-    return jsonify(result)
+    return jsonify([
+        {
+            "id": p.id,
+            "name": p.name,
+            "manufacturer": p.manufacturer,
+            "model": p.model
+        }
+        for p in products
+    ])
 
 
-@products_bp.post("/api/products")
+@products_bp.route("/products", methods=["POST"])
+@admin_required
 def create_product():
-    name = request.form.get("name")
-    supplier_id = request.form.get("supplier_id", type=int)
-    if not name or not supplier_id:
-        return jsonify(error="name and supplier_id are required"), 400
+    data = request.get_json(silent=True)
 
-    image_key = None
-    file = request.files.get("image")
-    if file:
-        ext = file.filename.rsplit(".", 1)[-1].lower()
-        if ext not in {"jpg", "jpeg", "png", "webp"}:
-            return jsonify(error="unsupported image type"), 400
-        image_key = f"{uuid.uuid4().hex}.{ext}"
-        s3.upload_fileobj(file, BUCKET, image_key,
-                          ExtraArgs={"ContentType": file.mimetype})
+    if not isinstance(data, dict):
+        return jsonify({"error": "A JSON object is required"}), 400
+
+    name = data.get("name")
+
+    if not isinstance(name, str) or not name.strip():
+        return jsonify({"error": "Product name is required"}), 400
 
     product = Product(
-        name=name,
-        manufacturer=request.form.get("manufacturer"),
-        model=request.form.get("model"),
-        image_key=image_key,
-        supplier_id=supplier_id,
+        name=name.strip(),
+        manufacturer=data.get("manufacturer"),
+        model=data.get("model")
     )
+
     db.session.add(product)
     db.session.commit()
-    return jsonify(id=product.id), 201
-
-@products_bp.get("/api/products/<int:product_id>")
-def get_product(product_id):
-    product = db.get_or_404(Product, product_id)
-    supplier = product.supplier
 
     return jsonify({
         "id": product.id,
         "name": product.name,
         "manufacturer": product.manufacturer,
-        "model": product.model,
-        "image_url": image_url(product.image_key),
-        "supplier": {
-            "name": supplier.name,
-            "city": supplier.city,
-            "country": supplier.country,
-            "email": supplier.email,
-            "contact_number": supplier.contact_number,
-        },
-        "listings": [
-            {
-                "id": l.id,
-                "price": l.price,
-                "city": l.city,
-                "province": l.province,
-                "country": l.country,
-                "src_qty": l.src_qty,
-                "src_type": l.src_type,
-                "pro_age": l.pro_age,
-            }
-            for l in product.listings
-        ],
-    })
+        "model": product.model
+    }), 201
+
+
+
+@products_bp.route('/products/<int:product_id>', methods=['DELETE'])
+@admin_required
+def delete_product(product_id):
+    product = db.session.get(Product, product_id)
+    if product is None:
+        return jsonify({"error": "Product not found"}), 404
+
+    db.session.delete(product)
+    db.session.commit()
+    return jsonify({"message": "Product deleted"}), 200
