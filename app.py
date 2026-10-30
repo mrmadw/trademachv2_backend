@@ -11,6 +11,7 @@ from routes.listings import listings_bp
 from routes.suppliers import suppliers_bp
 from routes.auth import auth_bp
 from routes.admin_users import adminusers_bp
+from routes.uploads import uploads_bp
 from flask_migrate import Migrate
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
@@ -54,6 +55,7 @@ app.register_blueprint(products_bp)
 app.register_blueprint(listings_bp)
 app.register_blueprint(adminusers_bp)
 app.register_blueprint(suppliers_bp)
+app.register_blueprint(uploads_bp)
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
