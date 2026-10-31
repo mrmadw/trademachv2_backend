@@ -17,6 +17,8 @@ def get_products():
         {
             "id": p.id,
             "name": p.name,
+            "image_key": p.image_key,
+            "image_url": image_url(p.image_key),
             "manufacturer": p.manufacturer,
             "model": p.model,
             "supplier_id": p.supplier_id,

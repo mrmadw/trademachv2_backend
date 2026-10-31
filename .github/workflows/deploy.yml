@@ -81,7 +81,7 @@ jobs:
               docker run -d \
                 --name flask-backend \
                 --restart unless-stopped \
-                --network appnet \
+                --network tm-net \
                 -p 5000:5000 \
                 --env-file ~/trademachv2/tm_backend/.env \
                 mrmadw/mrmadw-repo:latest
