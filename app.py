@@ -6,6 +6,9 @@ from flask_cors import CORS
 from db import db
 import models
 from models.product import Product
+from models.supplier import Supplier
+from models.listing import Listing
+from models.user import Admin
 from routes.products import products_bp
 from routes.listings import listings_bp
 from routes.suppliers import suppliers_bp

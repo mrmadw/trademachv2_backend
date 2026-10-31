@@ -5,8 +5,8 @@ class Listing(db.Model):
     __tablename__ = "listings"
 
     id = db.Column(db.Integer, primary_key=True)
-    #product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
-    #product = db.relationship("Product", backref="listings")
+    product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
+    product = db.relationship("Product", backref="listings")
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     country = db.Column(db.String(100), nullable=False)
     province = db.Column(db.String(100))
