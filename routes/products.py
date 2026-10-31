@@ -40,7 +40,8 @@ def create_product():
     product = Product(
         name=name.strip(),
         manufacturer=data.get("manufacturer"),
-        model=data.get("model")
+        model=data.get("model"),
+        supplier_id=data("supplier_id"),
     )
 
     db.session.add(product)
@@ -50,7 +51,8 @@ def create_product():
         "id": product.id,
         "name": product.name,
         "manufacturer": product.manufacturer,
-        "model": product.model
+        "model": product.model,
+        "supplier_id":product.supplier_id,
     }), 201
 
 
