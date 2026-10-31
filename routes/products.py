@@ -18,7 +18,8 @@ def get_products():
             "id": p.id,
             "name": p.name,
             "manufacturer": p.manufacturer,
-            "model": p.model
+            "model": p.model,
+            "supplier_id": p.supplier_id,
         }
         for p in products
     ])
