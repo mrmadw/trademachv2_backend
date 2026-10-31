@@ -41,7 +41,7 @@ def create_product():
         name=name.strip(),
         manufacturer=data.get("manufacturer"),
         model=data.get("model"),
-        supplier_id=data("supplier_id"),
+        supplier_id=data.get("supplier_id"),
     )
 
     db.session.add(product)
