@@ -60,7 +60,7 @@ def _client(endpoint):
 			except(BotoCoreError, ClientError):
 				pass
 
-		@uploads_bp.post("/api/products/<int:products_id>/image")
+		@uploads_bp.post("/products/<int:products_id>/image")
 		# @admin_requied
 
 		def upload_product_image(product_id):
@@ -106,7 +106,7 @@ def _client(endpoint):
 
 				return jsonify(image_key=new_key, image_url=image_url(image_key)), 201
 
-		@uploads_bp.delete("/api.products/<int:product_id/image>")
+		@uploads_bp.delete("/products/<int:product_id/image>")
 		# @admin_required
 		def delete_product_product(product_id):
 			from app import db, Product
