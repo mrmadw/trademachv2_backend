@@ -10,8 +10,8 @@ class Product(db.Model):
 
     image_key = db.Column(db.String(500), nullable=True)
 
-    #supplier_id = db.Column(db.Integer, db.ForeignKey("suppliers.id"), nullable=False)
-    #supplier = db.relationship("Supplier", backref="products")
+    supplier_id = db.Column(db.Integer, db.ForeignKey("suppliers.id"), nullable=False)
+    supplier = db.relationship("Supplier", backref="products")
 
 
     
