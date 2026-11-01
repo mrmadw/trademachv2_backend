@@ -7,7 +7,6 @@ products_bp = Blueprint("products", __name__)
 
 
 @products_bp.route("/products", methods=["GET"])
-@admin_required
 def get_products():
     products = db.session.execute(
         db.select(Product)
