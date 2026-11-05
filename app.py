@@ -42,13 +42,14 @@ db_url = os.environ.get("DATABASE_URL")
 if not db_url:
     if os.environ.get("APP_ENV") == "production":
         raise RuntimeError("DATABASE_URL is not set")
-    db_url = "sqlite:///" + os.path.join(BASE_DIR, "trademachv2.db")
+    db_url = "sqlite:///" + os.path.join(BASE_DIR, "fresh_check.db")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {"pool_pre_ping": True}
 
 # Allow the Vue app to call this API
+CORS(app, origins=os.environ.get("FRONTEND_ORIGIN", "https://trademach.site").split(","))
 CORS(app, origins=os.environ.get("FRONTEND_ORIGIN", "http://localhost:5173").split(","))
 
 db.init_app(app)
