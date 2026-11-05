@@ -72,7 +72,7 @@ def _delete_object(key):
         pass  # best effort; an orphaned object is better than a failed request
 
 
-@uploads_bp.post("/products/<int:product_id>/image")
+@uploads_bp.post("/api/products/<int:product_id>/image")
 @admin_required
 def upload_product_image(product_id):
     product = db.session.get(Product, product_id)
@@ -114,7 +114,7 @@ def upload_product_image(product_id):
     return jsonify(image_key=new_key, image_url=image_url(new_key)), 201
 
 
-@uploads_bp.delete("/products/<int:product_id>/image")
+@uploads_bp.delete("/api/products/<int:product_id>/image")
 @admin_required
 def delete_product_image(product_id):
     product = db.session.get(Product, product_id)
