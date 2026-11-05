@@ -6,7 +6,7 @@ from auth_utils import admin_required
 products_bp = Blueprint("products", __name__)
 
 
-@products_bp.route("/products", methods=["GET"])
+@products_bp.route("/api/products", methods=["GET"])
 def get_products():
     products = db.session.execute(
         db.select(Product)
@@ -26,7 +26,7 @@ def get_products():
     ])
 
 
-@products_bp.route("/products", methods=["POST"])
+@products_bp.route("/api/products", methods=["POST"])
 @admin_required
 def create_product():
     data = request.get_json(silent=True)
@@ -59,7 +59,7 @@ def create_product():
 
 
 
-@products_bp.route('/products/<int:product_id>', methods=['DELETE'])
+@products_bp.route('/api/products/<int:product_id>', methods=['DELETE'])
 @admin_required
 def delete_product(product_id):
     product = db.session.get(Product, product_id)

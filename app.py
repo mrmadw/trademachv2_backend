@@ -5,6 +5,7 @@ from flask_cors import CORS
 
 from db import db
 import models
+from pathlib import Path
 from models.product import Product
 from models.supplier import Supplier
 from models.listing import Listing
@@ -21,7 +22,7 @@ from datetime import datetime, timedelta
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
 load_dotenv()
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+BASE_DIR = Path(__file__).resolve().parent
 
 app = Flask(__name__)
 
@@ -39,10 +40,12 @@ app.register_blueprint(auth_bp)
 # --- Database ---------------------------------------------------------------
 # Production: DATABASE_URL must be set (Postgres). Local dev falls back to SQLite.
 db_url = os.environ.get("DATABASE_URL")
+
 if not db_url:
     if os.environ.get("APP_ENV") == "production":
         raise RuntimeError("DATABASE_URL is not set")
-    db_url = "sqlite:///" + os.path.join(BASE_DIR, "fresh_check.db")
+
+    db_url = f"sqlite:///{(BASE_DIR / 'fresh_check.db').as_posix()}"
 
 app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
