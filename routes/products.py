@@ -2,9 +2,19 @@ from flask import Blueprint, jsonify, request
 from db import db
 from models.product import Product
 from auth_utils import admin_required
+import os
+
+
 
 products_bp = Blueprint("products", __name__)
 
+IMAGE_BASE_URL = os.environ.get("IMAGE_BASE_URL", "").rstrip("/")
+
+
+def image_url(image_key):
+    if not image_key:
+        return None
+    return f"{IMAGE_BASE_URL}/{image_key}"
 
 @products_bp.route("/api/products", methods=["GET"])
 def get_products():
@@ -52,6 +62,7 @@ def create_product():
     return jsonify({
         "id": product.id,
         "name": product.name,
+        "image_key": product.image_key,
         "manufacturer": product.manufacturer,
         "model": product.model,
         "supplier_id":product.supplier_id,
