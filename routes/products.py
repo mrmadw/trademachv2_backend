@@ -3,18 +3,12 @@ from db import db
 from models.product import Product
 from auth_utils import admin_required
 import os
+from storage import generate_image_url
 
 
 
 products_bp = Blueprint("products", __name__)
 
-IMAGE_BASE_URL = os.environ.get("IMAGE_BASE_URL", "").rstrip("/")
-
-
-def image_url(image_key):
-    if not image_key:
-        return None
-    return f"{IMAGE_BASE_URL}/{image_key}"
 
 @products_bp.route("/api/products", methods=["GET"])
 def get_products():
@@ -27,7 +21,7 @@ def get_products():
             "id": p.id,
             "name": p.name,
             "image_key": p.image_key,
-            "image_url": image_url(p.image_key),
+            "image_url": generate_image_url(p.image_key),
             "manufacturer": p.manufacturer,
             "model": p.model,
             "supplier_id": p.supplier_id,
